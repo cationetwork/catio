@@ -1,7 +1,6 @@
 #!/bin/sh
 #
-# NMNET project tinc-up version 1
-# New CatIO network tinc-up version 1
+# CatIO Network tinc-up version 1
 # Host: 
 # Edit: 
 # 
@@ -31,4 +30,4 @@ if [ -n "$addr_v6" ]; then
     ip addr add $addr_v6 dev nmnet-ipv6
 fi
 
-# Extend setting
+# Extra setting
