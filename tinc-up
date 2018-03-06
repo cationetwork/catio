@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# NMNET project tinc-up version 1
+# New CatIO network tinc-up version 1
+# Host: 
+# Edit: 
+# 
+# IP addresses setting with mask
+addr_v4=
+addr_v6=
+
+set -o errexit
+
+# Fix path
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+
+# Bring up the interface
+ip link set $INTERFACE up
+
+# VLan IPv4
+if [ -n "$addr_v4" ]; then
+    ip link add link $INTERFACE name nmnet-ipv4 type vlan id 1
+    ip link set nmnet-ipv4 up
+    ip addr add $addr_v4 dev nmnet-ipv4
+fi
+
+# VLan IPv6
+if [ -n "$addr_v6" ]; then
+    ip link add link $INTERFACE name nmnet-ipv6 type vlan id 2
+    ip link set nmnet-ipv6 up
+    ip addr add $addr_v6 dev nmnet-ipv6
+fi
+
+# Extend setting
