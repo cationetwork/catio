@@ -17,14 +17,14 @@ export PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
 ip link set $INTERFACE up
 
 # VLan IPv4
-if [ -n "$addr_v4" ]; then
+if [ -n "$ipv4" ]; then
     ip link add link $INTERFACE name $INTERFACE-ipv4 type vlan id 1
     ip link set $INTERFACE-ipv4 up
     ip addr add $ipv4 dev $INTERFACE-ipv4
 fi
 
 # VLan IPv6
-if [ -n "$addr_v6" ]; then
+if [ -n "$ipv6" ]; then
     ip link add link $INTERFACE name $INTERFACE-ipv6 type vlan id 2
     ip link set $INTERFACE-ipv6 up
     ip addr add $ipv6 dev $INTERFACE-ipv6
