@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # CatIO Network iptables setting version 1
+# Be aware to disable system specific firewall
 #
 # WAN IPv4 address
 wan=
@@ -24,6 +25,6 @@ iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 
-# Log save
-iptables -A INPUT -i $wan -j LOG --log-prefix "iptables dropped packets:"
+# Log
+iptables -A INPUT -i $wan -j LOG --log-prefix "iptables dropped packets: "
 iptables -t nat -A POSTROUTING -o $wan -j MASQUERADE

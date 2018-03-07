@@ -3,7 +3,7 @@
 # CatIO Network tinc-up version 1
 # Host: 
 # Edit: 
-# 
+#
 # IP addresses setting with mask
 addr_v4=
 addr_v6=
@@ -30,4 +30,4 @@ if [ -n "$addr_v6" ]; then
     ip addr add $addr_v6 dev nmnet-ipv6
 fi
 
-# Extra setting
+# User route peer
