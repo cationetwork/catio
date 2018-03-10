@@ -23,4 +23,4 @@ WantedBy=multi-user.target
 ```
 
 You may need to use `find / | grep tinc@.service` to find where it is.
-And also remove `tinc.service`.
+And also remove `/lib/systemd/system/tinc.service`, `/var/lib/systemd/migrated/tinc`.
