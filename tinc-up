@@ -1,33 +1,61 @@
 #!/bin/sh
+# -----------------------------------------------------------------
+# CatIO Network tinc-up hook script
 #
-# CatIO Network tinc-up version 1.1
-# Host: 
-# Edit: 
+# Description: This script was called when tinc started
 #
-# IP addresses setting with mask
-ipv4=
-ipv6=
+# Auther: Grover Chou <groverchout@gmail.com>
+#         Icecat
+# -----------------------------------------------------------------
+
+VERSION=1.1
+
+# --- Settings ----------------------------------------------------
+
+address_v4=
+address_v6=
+gateway_v6=
+default_route_v6=true
+
+# --- Initialize --------------------------------------------------
 
 set -o errexit
-
-# Fix path
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
 
-# Bring up the interface
+# --- Process -----------------------------------------------------
+
+echo "CatIO Network tinc-up script version $VERSION"
+
+## Interface
+
+echo "Setting interface"
+
+if [ -n "$address_v4" ]
+then
+    ip address add $address_v4 dev $INTERFACE
+fi
+
+if [ -n "$address_v6" ]
+then
+    ip -6 address add $address_v6 dev $INTERFACE
+fi
+
 ip link set $INTERFACE up
 
-# VLan IPv4
-if [ -n "$ipv4" ]; then
-    ip link add link $INTERFACE name $INTERFACE-ipv4 type vlan id 1
-    ip link set $INTERFACE-ipv4 up
-    ip addr add $ipv4 dev $INTERFACE-ipv4
+## Default route
+
+echo "Setting default route"
+
+if [ "$default_route_v6" = true ] && [ -n "$gateway_v6" ]
+then
+    original_gateway_v6=$(ip -6 route | awk '/default/ { print $3 }')
+
+    if [ -n "$original_gateway_v6" ]
+    then
+        ip -6 route del default
+    fi
+
+    ip -6 route add default dev $INTERFACE via $gateway_v6
 fi
 
-# VLan IPv6
-if [ -n "$ipv6" ]; then
-    ip link add link $INTERFACE name $INTERFACE-ipv6 type vlan id 2
-    ip link set $INTERFACE-ipv6 up
-    ip addr add $ipv6 dev $INTERFACE-ipv6
-fi
-
-# User route peer
+# --- Extra -------------------------------------------------------
