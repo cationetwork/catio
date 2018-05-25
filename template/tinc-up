@@ -15,7 +15,7 @@ VERSION=2.0
 address_v4=
 address_v6=
 gateway_v6=
-default_route_v6=true
+#default_route_v6=true
 
 # --- Initialize --------------------------------------------------
 
@@ -45,17 +45,19 @@ ip link set $INTERFACE up
 ## Default route
 
 echo "Setting default route"
+# Why is it so violent that coexistence is not good?
+ip -6 r a 2000::/0 via $gateway_v6 dev $INTERFACE metric 1025
 
-if [ "$default_route_v6" = true ] && [ -n "$gateway_v6" ]
-then
-    original_gateway_v6=$(ip -6 route | awk '/default/ { print $3 }')
-
-    if [ -n "$original_gateway_v6" ]
-    then
-        ip -6 route del default
-    fi
-
-    ip -6 route add default dev $INTERFACE via $gateway_v6
-fi
+#if [ "$default_route_v6" = true ] && [ -n "$gateway_v6" ]
+#then
+#    original_gateway_v6=$(ip -6 route | awk '/default/ { print $3 }')
+#
+#    if [ -n "$original_gateway_v6" ]
+#    then
+#        ip -6 route del default
+#    fi
+#
+#    ip -6 route add default dev $INTERFACE via $gateway_v6
+#fi
 
 # --- Extra -------------------------------------------------------
