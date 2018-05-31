@@ -8,14 +8,15 @@
 #         Icecat
 # -----------------------------------------------------------------
 
-VERSION=2.1.1
+VERSION=2.1.2
 
 # --- Settings ----------------------------------------------------
 
 address_v4=
 address_v6=
 gateway_v6=
-#default_route_v6=true
+rt_table=false
+host_default_route_v6=false
 
 # --- Initialize --------------------------------------------------
 
@@ -28,15 +29,17 @@ echo "CatIO Network tinc-up script version $VERSION"
 
 ## Interface
 
-echo "Setting interface"
-
 if [ -n "$address_v4" ]
 then
+    echo "Adding interface IPv4 address"
+
     ip address add $address_v4 dev $INTERFACE
 fi
 
 if [ -n "$address_v6" ]
 then
+    echo "Adding interface IPv6 address"
+
     ip -6 address add $address_v6 dev $INTERFACE
 fi
 
@@ -44,20 +47,33 @@ ip link set $INTERFACE up
 
 ## Default route
 
-echo "Setting default route"
-# Why is it so violent that coexistence is not good?
-ip -6 r a 2000::/3 via $gateway_v6 dev $INTERFACE metric 1025
+if [ -n "$address_v6" ] && [ -n "$gateway_v6" ]
+then
+    if [ "$rt_table" = true ]
+    then
+        echo "Adding default route to route table catio"
 
-#if [ "$default_route_v6" = true ] && [ -n "$gateway_v6" ]
-#then
-#    original_gateway_v6=$(ip -6 route | awk '/default/ { print $3 }')
-#
-#    if [ -n "$original_gateway_v6" ]
-#    then
-#        ip -6 route del default
-#    fi
-#
-#    ip -6 route add default dev $INTERFACE via $gateway_v6
-#fi
+        ip -6 route add default dev $INTERFACE via $gateway_v6 table catio
+    fi
+
+    if [ "$host_default_route_v6" = true ]
+    then
+        echo "Setting host IPv6 default route"
+
+        original_gateway_v6=$(ip -6 route | awk '/default/ { print $3 }')
+
+        if [ -n "$original_gateway_v6" ]
+        then
+            ip -6 route del default
+        fi
+
+        ip -6 route add default dev $INTERFACE via $gateway_v6
+    fi
+fi
 
 # --- Extra -------------------------------------------------------
+
+# ## Route for [node] <type> of [user]
+#
+# ip -6 route add <subnet> dev $INTERFACE via <address>
+# ip -6 rule add from <subnet> table catio
